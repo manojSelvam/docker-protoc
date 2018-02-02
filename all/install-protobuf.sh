@@ -1,8 +1,8 @@
 #!/bin/sh
 
-GRPC_VERSION=v1.7.x
+GRPC_VERSION=v1.9.x
 
-git clone -b $GRPC_VERSION --recursive -j8 https://github.com/grpc/grpc
+git clone -b ${GRPC_VERSION} --recursive -j8 https://github.com/grpc/grpc
 cd /tmp/grpc
 make 
 make install

@@ -19,7 +19,7 @@ printUsage() {
 }
 
 GEN_GATEWAY=false
-SUPPORTED_LANGUAGES=("go" "ruby" "csharp" "java" "python" "objc")
+SUPPORTED_LANGUAGES=("go" "ruby" "csharp" "java" "javalite" "python" "objc")
 GEN_DIR="./gen"
 EXTRA_INCLUDES=""
 OUT_DIR=""
@@ -142,6 +142,9 @@ case $GEN_LANG in
         ;;
     "java")
         GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
+        ;;
+	"javalite")
+        GEN_STRING="--grpc_out=lite:$OUT_DIR --java_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
         ;;
     *)
         GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which grpc_${PLUGIN_LANG}_plugin`"
