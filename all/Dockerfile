@@ -20,6 +20,11 @@ WORKDIR /tmp
 COPY install-protobuf.sh /tmp
 RUN chmod +x /tmp/install-protobuf.sh
 RUN /tmp/install-protobuf.sh
+
+COPY install-protoc-gen-grpc-javalite.sh /tmp
+RUN chmod +x /tmp/install-protoc-gen-grpc-javalite.sh
+RUN /tmp/install-protoc-gen-grpc-javalite.sh
+
 RUN git clone https://github.com/googleapis/googleapis
 
 FROM golang:$go-alpine$alpine
@@ -38,8 +43,10 @@ COPY --from=build /tmp/grpc/bins/opt/grpc_* /usr/local/bin/
 COPY --from=build /tmp/grpc/bins/opt/protobuf/protoc /usr/local/bin/
 COPY --from=build /tmp/grpc/libs/opt/ /usr/local/lib/
 COPY --from=build /tmp/grpc-java/compiler/build/exe/java_plugin/protoc-gen-grpc-java /usr/local/bin/
+COPY --from=build /tmp/javalite/protoc-gen-javalite /usr/local/bin/
 COPY --from=build /tmp/googleapis/google /usr/include/google
 COPY --from=build /usr/local/include/google /usr/local/include/google
+
 
 ADD entrypoint.sh /usr/local/bin
 RUN chmod +x /usr/local/bin/entrypoint.sh

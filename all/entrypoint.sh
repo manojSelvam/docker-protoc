@@ -135,6 +135,8 @@ if [[ $GEN_LANG == "python" ]]; then
     touch $GEN_DIR/__init__.py
 fi
 
+echo "making gen string for $GEN_LANG"
+
 GEN_STRING=''
 case $GEN_LANG in
     "go") 
@@ -144,12 +146,15 @@ case $GEN_LANG in
         GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
         ;;
 	"javalite")
-        GEN_STRING="--grpc_out=lite:$OUT_DIR --java_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
+        GEN_STRING=" --plugin=protoc-gen-javalite=`which protoc-gen-javalite` --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java` --javalite_out=$OUT_DIR "
+		echo "java lite --- switch "
         ;;
     *)
         GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which grpc_${PLUGIN_LANG}_plugin`"
         ;;
 esac
+
+echo "gen str for $GEN_LANG is  $GEN_STRING "
 
 PROTO_INCLUDE="-I /usr/include/ \
     -I /usr/local/include/ \
@@ -164,6 +169,10 @@ else
     PROTO_FILES=($FILE)
 fi
 
+echo "protoc $PROTO_INCLUDE \
+    $GEN_STRING \
+    ${PROTO_FILES[@]}"
+	
 protoc $PROTO_INCLUDE \
     $GEN_STRING \
     ${PROTO_FILES[@]}
