@@ -1,10 +1,12 @@
 #!/bin/sh
 
+# Download binaries directly from maven.
+
 GRPC_VERSION=v1.9.x
 
-git clone -b ${GRPC_VERSION} --recursive -j8 https://github.com/grpc/grpc
+git clone -b ${GRPC_VERSION} --recursive https://github.com/grpc/grpc
 cd /tmp/grpc
-make 
+make
 make install
 
 cp /tmp/grpc/bins/opt/protobuf/protoc /usr/local/bin/
