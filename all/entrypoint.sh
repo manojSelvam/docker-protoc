@@ -137,19 +137,19 @@ fi
 
 #echo "making gen string for $GEN_LANG"
 
-GEN_STRING=''
+GEN_STRING="--descriptor_set_out=${OUT_DIR}/proto.dis  --include_imports --include_source_info "
 case $GEN_LANG in
     "go") 
-        GEN_STRING="--go_out=plugins=grpc:$OUT_DIR"
+        GEN_STRING="$GEN_STRING --go_out=plugins=grpc:$OUT_DIR"
         ;;
     "java")
-        GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
+        GEN_STRING="$GEN_STRING --grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
         ;;
 	"javalite")
-        GEN_STRING=" --plugin=protoc-gen-javalite=`which protoc-gen-javalite` --javalite_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java` --grpc_out=lite:$OUT_DIR "
+        GEN_STRING="$GEN_STRING --plugin=protoc-gen-javalite=`which protoc-gen-javalite` --javalite_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java` --grpc_out=lite:$OUT_DIR "
         ;;
     *)
-        GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which grpc_${PLUGIN_LANG}_plugin`"
+        GEN_STRING="$GEN_STRING --grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which grpc_${PLUGIN_LANG}_plugin`"
         ;;
 esac
 
