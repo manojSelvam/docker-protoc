@@ -128,11 +128,11 @@ fi
 
 # Python also needs __init__.py files in each directory to import.
 # If __init__.py files are needed at higher level directories (i.e.
-# if $OUT_DIR is a longer path), it's the caller's responsibility
-# to create them.
+# directories above $OUT_DIR), it's the caller's responsibility to
+# create them.
 if [[ $GEN_LANG == "python" ]]; then
-    touch $OUT_DIR/__init__.py
-    touch $GEN_DIR/__init__.py
+    BASE_DIR=$(echo "$OUT_DIR" | cut -d "/" -f1)
+    find $BASE_DIR -type d | xargs -n1 -I '{}' touch '{}/__init__.py'
 fi
 
 #echo "making gen string for $GEN_LANG"

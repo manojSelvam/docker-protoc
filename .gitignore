@@ -4,3 +4,4 @@ test.rb
 gen/*
 pb-*
 .idea/*
+/gradle/
