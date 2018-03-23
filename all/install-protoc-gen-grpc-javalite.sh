@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # downlaod and install javalite generator. by default java lite is not included with protoc
 

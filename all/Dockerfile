@@ -15,6 +15,9 @@ RUN set -ex && apt-get update && apt-get install -y \
     g++ \
     git \
     default-jre
+	
+# use bash instead of dash	
+RUN  ln -sf bash /bin/sh
 
 WORKDIR /tmp
 COPY install-protobuf.sh /tmp
@@ -43,6 +46,7 @@ RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
 RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
+RUN go get -u github.com/micro/protoc-gen-micro
 
 #RUN ls -la /root/.go/bin/protoc*
 #RUN cp /root/.go/bin/protoc_* /usr/local/bin/

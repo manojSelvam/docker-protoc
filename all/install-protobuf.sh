@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Download binaries directly from maven.
 
