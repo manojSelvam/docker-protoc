@@ -143,7 +143,7 @@ case $GEN_LANG in
         GEN_STRING="$GEN_STRING --go_out=plugins=grpc:$OUT_DIR"
         ;;
 	"gomicro") 
-		GEN_STRING="$GEN_STRING --go_out=plugins=grpc:$OUT_DIR --micro_out=$OUT_DIR"
+		GEN_STRING="$GEN_STRING --go_out=$OUT_DIR --micro_out=$OUT_DIR"
         ;;
     "java")
         GEN_STRING="$GEN_STRING --grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
