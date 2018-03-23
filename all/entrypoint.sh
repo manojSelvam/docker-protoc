@@ -128,37 +128,36 @@ fi
 
 # Python also needs __init__.py files in each directory to import.
 # If __init__.py files are needed at higher level directories (i.e.
-# if $OUT_DIR is a longer path), it's the caller's responsibility
-# to create them.
+# directories above $OUT_DIR), it's the caller's responsibility to
+# create them.
 if [[ $GEN_LANG == "python" ]]; then
-    touch $OUT_DIR/__init__.py
-    touch $GEN_DIR/__init__.py
+    BASE_DIR=$(echo "$OUT_DIR" | cut -d "/" -f1)
+    find $BASE_DIR -type d | xargs -n1 -I '{}' touch '{}/__init__.py'
 fi
 
-echo "making gen string for $GEN_LANG"
+#echo "making gen string for $GEN_LANG"
 
-GEN_STRING=''
+GEN_STRING="--descriptor_set_out=${OUT_DIR}/proto.dis  --include_imports --include_source_info "
 case $GEN_LANG in
     "go") 
-        GEN_STRING="--go_out=plugins=grpc:$OUT_DIR"
+        GEN_STRING="$GEN_STRING --go_out=plugins=grpc:$OUT_DIR"
         ;;
     "java")
-        GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
+        GEN_STRING="$GEN_STRING --grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
         ;;
 	"javalite")
-        GEN_STRING=" --plugin=protoc-gen-javalite=`which protoc-gen-javalite` --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java` --javalite_out=$OUT_DIR "
-		echo "java lite --- switch "
+        GEN_STRING="$GEN_STRING --plugin=protoc-gen-javalite=`which protoc-gen-javalite` --javalite_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java` --grpc_out=lite:$OUT_DIR "
         ;;
     *)
-        GEN_STRING="--grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which grpc_${PLUGIN_LANG}_plugin`"
+        GEN_STRING="$GEN_STRING --grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which grpc_${PLUGIN_LANG}_plugin`"
         ;;
 esac
 
-echo "gen str for $GEN_LANG is  $GEN_STRING "
+#echo "gen str for $GEN_LANG is  $GEN_STRING "
 
 PROTO_INCLUDE="-I /usr/include/ \
     -I /usr/local/include/ \
-    -I /go/src/github.com/grpc-ecosystem/grpc-gateway/ \
+    -I $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/ \
     $EXTRA_INCLUDES"
 
 if [ ! -z $PROTO_DIR ]; then
@@ -169,13 +168,17 @@ else
     PROTO_FILES=($FILE)
 fi
 
-echo "protoc $PROTO_INCLUDE \
-    $GEN_STRING \
-    ${PROTO_FILES[@]}"
-	
+
+# echo "protoc $PROTO_INCLUDE \
+#    $GEN_STRING \
+#    ${PROTO_FILES[@]}"
+
+
 protoc $PROTO_INCLUDE \
     $GEN_STRING \
     ${PROTO_FILES[@]}
+
+
 
 if [ $GEN_GATEWAY = true ]; then
     GATEWAY_DIR=${OUT_DIR}

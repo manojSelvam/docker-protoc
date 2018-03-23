@@ -4,25 +4,34 @@ This repository contains the Dockerfile for generating gRPC and protobuf code
 for various languages, removing the need to setup protoc and the various gRPC
 plugins lcoally. It relies on setting a simple volume to the docker container,
 usually mapping the current directory to `/defs`, and specifying the file and
-language you want to generate.
+language you want to generate (see [Docker troubleshooting](#docker-troubleshooting) below).
+
+> Note - throughout this document, commands for bash are prefixed with `$` and commands
+> for PowerShell on Windows are prefixed with `PS>`.  It is not required to use "Windows
+> Subsystem for Linux" (WSL)
 
 ## Usage
 
 Pull the container:
 
 ```sh
-$ docker pull namely/protoc-all
+$ docker pull namely/protoc-all:1.9
 ```
 
 After that, travel to the directory that contains your `.proto` definition
 files.
 
-So if you have a directory: `/Users/me/project/protobufs/` that has:
-`myproto.proto`, you'd want to do this:
+So if you have a directory: `~/my_project/protobufs/` that has:
+`myproto.proto`, you'd want to run this:
 
 ```sh
-cd ~/my_project/protobufs
-docker run -v `pwd`:/defs namely/protoc-all -f myproto.proto -l ruby #or go, csharp, etc
+$ cd ~/my_project/protobufs
+$ docker run -v `pwd`:/defs namely/protoc-all:1.9 -f myproto.proto -l ruby #or go, csharp, etc
+```
+
+```powershell
+PS> cd ~/my_project/protobufs
+PS> docker run -v ${pwd}:/defs namely/protoc-all:1.9 -f myproto.proto -l ruby #or go, csharp, etc
 ```
 
 The container automatically puts the compiled files into a `gen` directory with
@@ -46,24 +55,26 @@ input. To remove the `protorepo` you need to add an include and change the
 import:
 
 ```
-$ docker run ... namely/protoc-all -i protorepo -f catalog/catalog.proto -l go
+$ docker run ... namely/protoc-all:1.9 -i protorepo -f catalog/catalog.proto -l go
 # instead of
-$ docker run ... namely/protoc-all -f protorepo/catalog/catalog.proto -l go
+$ docker run ... namely/protoc-all:1.9 -f protorepo/catalog/catalog.proto -l go
 # which will generate files in a `protorepo` directory.
 ```
 
 ## gRPC Gateway (Experimental)
 
-This repo also provides a script `all/generate_gateway.sh` that will generate an
-Docker image of a [grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway)
-for your proto. Run it locally, specifying your proto file, the name of your
-gRPC service (we could figure it out by parsing the proto file, but for now this
-is easier), and the name of the Docker container to generate.
+This repo also provides a docker images `namely/gen-grpc-gateway` that
+generates a gRPC gateway. After running this image, it will create a folder with a
+simple go [grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway) server. By
+default, this goes in the `gen/grpc-gateway` folder.
+
+This directory includes a Dockerfile. To build into a Docker image simply run
+`docker build -t my-container gen/grpc-gateway/`.
 
 The container is a stand-alone app that acts as an HTTP server and a gRPC client
 for your service. Run it with "docker run my-container --backend=grpc-service:50051",
-where --backend refers to your actual gRPC server's address.
-
+where --backend refers to your actual gRPC server's address. It listens on port 80
+for HTTP traffic.
 
 ## grpc\_cli
 
@@ -121,3 +132,12 @@ $ make push
 This will build and push the containers to the Namely registry located on
 [DockerHub](https://hub.docker.com/u/namely/). You must be authorized to push to
 this repo.
+
+
+## Docker Troubleshooting
+
+You must have a volume created called `defs`.  To check this, run `docker volume ls` and ensure there is a volume there named `defs` using the `local` driver.  If not, run `docker volume create defs`.
+
+Docker must be configured to use Linux containers.
+
+If on Windows, you must have your C: drive shared with Docker.  Open the Docker settings (right-click Docker icon in notification area) and pick the Shared Drives tab.  Ensure C is listed and the box is checked.  If you are still experiencing trouble, click "Reset credentials..." on that tab and re-enter your local Windows username and password.
