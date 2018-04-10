@@ -19,7 +19,7 @@ printUsage() {
 }
 
 GEN_GATEWAY=false
-SUPPORTED_LANGUAGES=("go" "ruby" "csharp" "java" "javalite" "python" "objc" "gomicro")
+SUPPORTED_LANGUAGES=("go" "ruby" "csharp" "java" "javalite" "python" "objc" "gomicro" "gogomicro" "swift")
 GEN_DIR="./gen"
 EXTRA_INCLUDES=""
 OUT_DIR=""
@@ -145,6 +145,12 @@ case $GEN_LANG in
 	"gomicro") 
 		GEN_STRING="$GEN_STRING --go_out=$OUT_DIR --micro_out=$OUT_DIR"
         ;;
+	"gogomicro")
+		GEN_STRING="$GEN_STRING --gogo_out=$OUT_DIR --micro_out=$OUT_DIR"
+        ;;
+	"swift")
+		GEN_STRING="$GEN_STRING --swift_out=$OUT_DIR --swiftgrpc_out=$OUT_DIR"
+        ;;
     "java")
         GEN_STRING="$GEN_STRING --grpc_out=$OUT_DIR --${GEN_LANG}_out=$OUT_DIR --plugin=protoc-gen-grpc=`which protoc-gen-grpc-java`"
         ;;
@@ -161,6 +167,7 @@ esac
 PROTO_INCLUDE="-I /usr/include/ \
     -I /usr/local/include/ \
     -I $GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/ \
+    -I $GOPATH/src/ \
     $EXTRA_INCLUDES"
 
 if [ ! -z $PROTO_DIR ]; then
@@ -176,7 +183,7 @@ fi
 #    $GEN_STRING \
 #    ${PROTO_FILES[@]}"
 
-
+#protoc --lint_out=. *.proto
 protoc $PROTO_INCLUDE \
     $GEN_STRING \
     ${PROTO_FILES[@]}
