@@ -1,7 +1,25 @@
 ARG alpine=3.6
 ARG go=1.9.2
 
-FROM partlab/ubuntu-golang AS build
+FROM partlab/ubuntu AS golang-base
+
+MAINTAINER Régis Gaidot <regis@partlab.co>
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV INITRD No
+ENV LANG en_US.UTF-8
+ENV GOVERSION 1.10.2
+ENV GOROOT /opt/go
+ENV GOPATH /root/.go
+
+RUN cd /opt && wget https://storage.googleapis.com/golang/go${GOVERSION}.linux-amd64.tar.gz && \
+    tar zxf go${GOVERSION}.linux-amd64.tar.gz && rm go${GOVERSION}.linux-amd64.tar.gz && \
+    ln -s /opt/go/bin/go /usr/bin/ && \
+    mkdir $GOPATH
+
+CMD ["/usr/bin/go"]
+
+FROM golang-base AS build
 
 RUN set -ex && apt-get update && apt-get install -y \
     bash \
@@ -56,7 +74,7 @@ RUN set -ex && apt-get install -y \
 
 RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
-RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+#RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 RUN go get -u github.com/micro/protoc-gen-micro
 
