@@ -102,8 +102,12 @@ if [[ ! ${SUPPORTED_LANGUAGES[*]} =~ "$GEN_LANG" ]]; then
 fi
 
 if [[ "$GEN_GATEWAY" == true && "$GEN_LANG" != "go" ]]; then
-  echo "Generating grpc-gateway is Go specific."
-  exit 1
+	if echo "$GEN_LANG" | grep 'go'; then
+		echo "grpc-gateway"
+	else
+		echo "Generating grpc-gateway is Go specific."
+		exit 1
+	fi
 fi
 
 PLUGIN_LANG=$GEN_LANG
@@ -194,6 +198,7 @@ if [ $GEN_GATEWAY = true ]; then
     GATEWAY_DIR=${OUT_DIR}
     mkdir -p ${GATEWAY_DIR}
 
+	
     protoc $PROTO_INCLUDE \
 		--grpc-gateway_out=logtostderr=true:$GATEWAY_DIR ${PROTO_FILES[@]}
     protoc $PROTO_INCLUDE  \

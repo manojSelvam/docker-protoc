@@ -60,7 +60,7 @@ RUN chmod +x /tmp/install-swift-protobuf.sh
 RUN /tmp/install-swift-protobuf.sh
 
 
-FROM partlab/ubuntu-golang
+FROM golang-base
 
 #RUN set -ex && apt-get update && apt-get install -y \
 #    bash \
@@ -74,7 +74,7 @@ RUN set -ex && apt-get install -y \
 
 RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
-#RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+RUN go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 RUN go get -u github.com/micro/protoc-gen-micro
 
